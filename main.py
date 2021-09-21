@@ -3,7 +3,7 @@ import numpy as np
 from random import randint
 from time import sleep
 
-GRID = 10
+GRID = 25
 SIZE = 1000
 SCALE = SIZE / GRID
 SLEEP = 0.1
@@ -21,16 +21,22 @@ class Cell():
         count = 0
         for x in range(3): 
             for y in range (3): 
-                if x != 2 and y != 2 and self._exists(x, y, matrix):
+                if (x == 1 and y == 1):
+                    continue
+                elif self._exists(x, y, matrix):
                     count += 1
-                    
+                else: continue
+
         if self.status: self.status = count in (2, 3)
         else: self.status = count == 3
     
     def _exists(self, posX, posY, matrix) -> bool:
         nR = self.r + posX - 1
         nC = self.c + posY - 1
-        return matrix[nR][nC].status
+        if nR > -1 and nR < len(matrix) and nC > -1 and nC < len(matrix[nR]):
+            return matrix[nR][nC].status
+        else: 
+            return False
 
 
 
@@ -59,8 +65,8 @@ def produce(window):
 def click(canvas, coords, mx):
     i=int(coords.x//SCALE)
     j=int(coords.y//SCALE)
-    status = mx[i][j].status
-    mx[i][j].status = not status
+    status = mx[j][i].status
+    mx[j][i].status = not status
     tag = f"cell/{i}/{j}"
     color = "#888" if not status else "#333"
 
@@ -83,9 +89,16 @@ def random(mx, canvas, window):
 
 def game(mx, canvas, window):
     counter = 0
+    newMx = np.empty((GRID, GRID), dtype=object)
     for i in range(GRID):
         for j in range(GRID):
-            if mx[i][j].status: 
+            newMx[i][j] = Cell(i, j)
+            newMx[i][j].status = mx[i][j].status
+
+    for i in range(GRID):
+        for j in range(GRID):
+            newMx[i][j].check(mx)
+            if newMx[i][j].status: 
                 canvas.create_rectangle(
                     i*SCALE, j*SCALE, (i+1)*SCALE, (j+1)*SCALE,
                     outline="#000",
@@ -96,8 +109,9 @@ def game(mx, canvas, window):
                     i*SCALE, j*SCALE, (i+1)*SCALE, (j+1)*SCALE,
                     outline="#000",
                     fill="#333")
-            mx[i][j].check(mx)
-    
+    for i in range(GRID):
+        for j in range(GRID):
+            mx[i][j].status = newMx[i][j].status
     window.update()
     if not counter: 
         window.destroy()
