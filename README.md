@@ -2,6 +2,8 @@
 A simple The Game of Life by John Conway in Python3
 ## Installation
 ```console
+git clone https://github.com/TrapTheOnly/TheGameOfLife.git
+cd ./TheGameOfLife
 pip3 install -r requirements.txt
 ```
 ## Controls
