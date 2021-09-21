@@ -60,6 +60,7 @@ def produce(window):
 
     window.bind("<Return>", lambda e: start(matr, canvas, window))
     window.bind("r", lambda e: random(matr, canvas, window))
+    window.bind("t", lambda e: (window.destroy(), main()) )
     window.mainloop()
 
 def click(canvas, coords, mx):
